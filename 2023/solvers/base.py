@@ -19,5 +19,5 @@ class Solver:
             return line
         return [prep(line) for line in file.readlines()]
 
-    def solve(self, *args):
+    def solve(self, part, *args):
         return 0
