@@ -6,9 +6,8 @@ from .base import Solver
 class Day1Solver(Solver):
 
     def solve(self, part, *lines):
-        items = ["\\d"]
-        if part == 2:
-            items.extend(ENG_DIGITS.keys())
+        items = ["\\d"] + (list(DIGIT_WORDS.keys()) if part == 2 else [])
+        # include overlapping matches
         pattern = f"(?=({'|'.join(items)}))"
 
         def interpret(line):
@@ -18,14 +17,14 @@ class Day1Solver(Solver):
             tot = 0
             for d in (all[0], all[-1]):
                 tot *= 10
-                n = int(d) if d.isdigit() else ENG_DIGITS[d]
+                n = int(d) if d.isdigit() else DIGIT_WORDS[d]
                 tot += n
             return tot
 
         return sum(interpret(line) for line in lines)
 
 
-ENG_DIGITS = dict(
+DIGIT_WORDS = dict(
     one=1,
     two=2,
     three=3,
