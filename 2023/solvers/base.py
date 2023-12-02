@@ -25,4 +25,11 @@ class Solver:
         return [prep(line) for line in file.readlines()]
 
     def solve(self, part, *args):
-        return 0
+        return (self.solve_part1(*args) if part == 1
+                else self.solve_part2(*args))
+
+    def solve_part1(self, *args):
+        ...
+
+    def solve_part2(self, *args):
+        ...

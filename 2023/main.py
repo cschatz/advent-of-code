@@ -17,10 +17,11 @@ class Puzzle:
     """Represent applying solver code to a particular day's puzzle,
     optionally including test input in addition to the main puzzle input."""
 
-    def __init__(self, day, parts, skip_tests):
+    def __init__(self, day, parts, skip_tests, skip_main):
         self.day = day
         self.parts = parts
         self.skip_tests = skip_tests
+        self.skip_main = skip_main
         self.solver = None
         self.inputs = {}
         self._instantiate_solver()
@@ -41,7 +42,8 @@ class Puzzle:
         else:
             parts = (1, 2)
         skip_tests = "-s" in args[2:]
-        return Puzzle(day, parts, skip_tests)
+        skip_main = "-t" in args[2:]
+        return Puzzle(day, parts, skip_tests, skip_main)
 
     def _instantiate_solver(self):
         try:
@@ -89,7 +91,7 @@ class Puzzle:
             if str(result) == expected:
                 msg = "pass"
             else:
-                msg = "FAILED - expected {expected}, got {result}"
+                msg = f"FAILED - expected {expected}, got {result}"
         else:
             msg = result
         print(f"  {label}: {msg}")
@@ -104,7 +106,8 @@ class Puzzle:
                     test_input, expected = test_data
                     self._solve_and_report(part, f"Test{label.capitalize()}",
                                            test_input, expected)
-            self._solve_and_report(part, "Solution", self.inputs["main"])
+            if not self.skip_main:
+                self._solve_and_report(part, "Solution", self.inputs["main"])
             print()
 
 
