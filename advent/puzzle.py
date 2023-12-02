@@ -34,23 +34,21 @@ class Puzzle:
         for part in self.parts:
             print(f"Part {part}")
             if self.include_tests:
-                for label, input_data in self.inputs[part].items():
+                test_inputs = self.inputs.get(part)
+                if not test_inputs:
+                    raise SetupError(f"No tests provided for part {part}")
+                for label, input_data in test_inputs.items():
                     label = " {label.capitalize()}" if label else ""
                     result = self._solve_one(
-                        part, input_data["input"], expected=input_data["expected"])
+                        part,
+                        input_data["input"],
+                        expected=input_data["expected"]
+                    )
                     print(f"  Test{label}: {result}")
             if self.include_puzzle:
+                primary_input = self.inputs.get("primary")
+                if not primary_input:
+                    raise SetupError("No puzzle input provided")
                 result = self._solve_one(part, self.inputs["primary"])
                 print(f"  Solution: {result}")
             print()
-        # print()
-        # for part in self.parts:
-        #     print(f"Part {part}")
-        #     if not self.skip_tests:
-        #         for label, test_data in self.inputs["tests"][part].items():
-        #             test_input, expected = test_data
-        #             self._solve_and_report(part, f"Test{label.capitalize()}",
-        #                                    test_input, expected)
-        #     if not self.skip_main:
-        #         self._solve_and_report(part, "Solution", self.inputs["main"])
-        #     print()
