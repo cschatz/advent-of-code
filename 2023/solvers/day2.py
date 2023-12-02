@@ -9,8 +9,6 @@ COLORS = ("red", "green", "blue")
 
 class Day2Solver(Solver):
 
-    MAXES = (12, 13, 14)
-
     def parse(self, file):
         def parse_line(line):
             line = re.sub(r'Game \d+: ', "", line)
@@ -27,12 +25,10 @@ class Day2Solver(Solver):
         return [parse_line(line) for line in lines]
 
     def solve_part1(self, *games):
+        MAXES = (12, 13, 14)
         sum = 0
         for index, game in enumerate(games, 1):
-            for counts in game:
-                if any(counts[i] > self.MAXES[i] for i in range(3)):
-                    break
-            else:
+            if all(all(counts[i] <= MAXES[i] for i in range(3)) for counts in game):
                 sum += index
         return sum
 
