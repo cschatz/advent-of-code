@@ -1,4 +1,9 @@
+class TestFailure(Exception):
+    pass
+
+
 class Solver:
+
     def parse(self, file):
         return Solver.input_lines(file)
 
