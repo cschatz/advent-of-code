@@ -15,8 +15,6 @@ class Day1Solver(Solver):
 
         def interpret(line):
             all = re.findall(pattern, line)
-            # overkill for just first and last, but easy to
-            # adapt to more than 2 digits
             tot = 0
             for d in (all[0], all[-1]):
                 tot *= 10
