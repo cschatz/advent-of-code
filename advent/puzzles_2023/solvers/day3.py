@@ -46,7 +46,7 @@ class Day3Part1(Day3):
     
 
 class Day3Part2(Day3):
-    def adj_nums(self, row, symbol_col):
+    def _adj_nums(self, row, symbol_col):
         return tuple(
             n
             for r in self._adj_row_range(row)
@@ -58,7 +58,7 @@ class Day3Part2(Day3):
         return sum(
             nn[0] * nn[1]
             for nn in (
-                self.adj_nums(r, symbol_col)
+                self._adj_nums(r, symbol_col)
                 for r, symbol_entries in enumerate(self.symbols)
                 for symbol, symbol_col in symbol_entries
                 if symbol == "*"

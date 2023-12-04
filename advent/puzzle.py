@@ -39,14 +39,14 @@ class Puzzle:
 
     def solve(self):
         for i, part in enumerate(self.parts):
-            print(f"  Part {part}")
+            print(f"\n--- Part {part} ---")
             if self.test_solvers:
                 for label, test_solver, expected in self.test_solvers[i]:
                     test_result = test_solver.solve()
-                    print(f"    {label}: {_test_msg(test_result, expected)}")
+                    print(f"  {label}: {_test_msg(test_result, expected)}")
             if self.puzzle_solvers:
                 result = self.puzzle_solvers[i].solve()
-                print(f"    Solution: {result}")
+                print(f"  Solution: {result}")
 
 
 def _open_file(filename):
