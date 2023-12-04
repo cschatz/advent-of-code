@@ -24,15 +24,17 @@ class Day3(Solver):
             self.symbols.append(symbol_row)
         self.num_rows = len(self.numbers)
 
-    def _adj_row_range(self, row):
+    def _row_window(self, row):
         return range(max(0, row - 1), min(row + 2, self.num_rows))
+    
+    def _in_col_window(self, col, startcol, endcol):
+        return col >= startcol - 1 and col <= endcol + 1
 
 class Day3Part1(Day3):
-    def _check_adjacent(self, row, number_entry):
-        startcol, endcol = number_entry[1:]
+    def _check_adjacent(self, row, span):
         return any(
-            symbol_col in range(startcol - 1, endcol + 2)
-            for r in self._adj_row_range(row)
+            self._in_col_window(symbol_col, *span)
+            for r in self._row_window(row)
             for _, symbol_col in self.symbols[r]
         )
 
@@ -41,27 +43,24 @@ class Day3Part1(Day3):
             entry[0]
             for r, entries in enumerate(self.numbers)
             for entry in entries
-            if self._check_adjacent(r, entry)
+            if self._check_adjacent(r, entry[1:])
         )
     
 
 class Day3Part2(Day3):
-    def _adj_nums(self, row, symbol_col):
+    def _adjacent_nums(self, row, symbol_col):
         return tuple(
-            n
-            for r in self._adj_row_range(row)
-            for n, startcol, endcol in self.numbers[r]
-            if symbol_col in range(startcol - 1, endcol + 2)
+            num
+            for r in self._row_window(row)
+            for num, *span in self.numbers[r]
+            if self._in_col_window(symbol_col, *span)
         )
     
     def solve(self):
         return sum(
-            nn[0] * nn[1]
-            for nn in (
-                self._adj_nums(r, symbol_col)
-                for r, symbol_entries in enumerate(self.symbols)
-                for symbol, symbol_col in symbol_entries
-                if symbol == "*"
-            )
-            if len(nn) == 2
+            nums[0] * nums[1]
+            for r, symbol_entries in enumerate(self.symbols)
+            for symbol, symbol_col in symbol_entries
+            if symbol == "*" and
+            len(nums := self._adjacent_nums(r, symbol_col)) == 2
         )

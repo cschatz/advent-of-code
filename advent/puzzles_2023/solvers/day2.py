@@ -9,7 +9,7 @@ COLORS = ("red", "green", "blue")
 
 class Day2(Solver):
     def parse(self, lines):
-        def parse_line(line):
+        def process(line):
             return tuple(
                 tuple(
                     int(m.group(1))
@@ -19,7 +19,7 @@ class Day2(Solver):
                 )
                 for draw in line.split("; ")
             )
-        self.games = [parse_line(line) for line in lines]
+        self.games = [process(line) for line in lines]
 
 
 class Day2Part1(Day2):
