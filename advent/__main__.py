@@ -1,15 +1,15 @@
 import sys
 
-from .puzzle import Puzzle
-
-from .util import (
-    parse_args,
-    SetupError,
-)
+from .argparsing import parse_args
+from .puzzle import Puzzle, PuzzleError
 
 try:
-    puzzle = Puzzle(*parse_args(sys.argv))
-    puzzle.solve()
-except SetupError as e:
+    year, days, *other = parse_args(sys.argv)
+    for day in days:
+        puzzle = Puzzle(year, day, *other)
+        print(f"==== Day {day} ====")
+        puzzle.solve()
+        print()
+except PuzzleError as e:
     print()
     print(f"*** {e}")

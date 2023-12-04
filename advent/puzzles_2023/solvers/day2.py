@@ -7,9 +7,8 @@ from .base import Solver
 COLORS = ("red", "green", "blue")
 
 
-class Day2Solver(Solver):
-
-    def parse(self, file):
+class Day2(Solver):
+    def parse(self, lines):
         def parse_line(line):
             return tuple(
                 tuple(
@@ -20,20 +19,26 @@ class Day2Solver(Solver):
                 )
                 for draw in line.split("; ")
             )
-        return [parse_line(line) for line in file.readlines()]
+        self.games = [parse_line(line) for line in lines]
 
-    def solve_part1(self, *games):
+
+class Day2Part1(Day2):
+    def solve(self):
         MAXES = (12, 13, 14)
         return sum(
-            index for index, game in enumerate(games, 1)
+            index for index, game in enumerate(self.games, 1)
             if all(
                 all(counts[i] <= MAXES[i] for i in range(3))
                 for counts in game
             )
         )
 
-    def solve_part2(self, *games):
+
+class Day2Part2(Day2):
+    def solve(self):
         return sum(
             reduce(mul, (max(counts) for counts in zip(*game)), 1)
-            for game in games
+            for game in self.games
         )
+    
+

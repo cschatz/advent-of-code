@@ -2,24 +2,34 @@ import re
 
 from .base import Solver
 
-DIGIT_WORDS = ("one", "two", "three", "four", "five",
-               "six", "seven", "eight", "nine")
 
+class Day1Part1(Solver):
+    @property
+    def pattern(self):
+        return r'\d'
 
-class Day1Solver(Solver):
-
-    def solve(self, part, *lines):
-        items = ("\\d",) + (DIGIT_WORDS if part == "2" else ())
-        # include overlapping matches
-        pattern = f"(?=({'|'.join(items)}))"
-
+    def solve(self):
         def interpret(line):
-            all = re.findall(pattern, line)
+            all = re.findall(self.pattern, line)
             tot = 0
             for d in (all[0], all[-1]):
                 tot *= 10
-                n = int(d) if d.isdigit() else DIGIT_WORDS.index(d) + 1
-                tot += n
+                tot += self._item_to_number(d)
             return tot
 
-        return sum(interpret(line) for line in lines)
+        return sum(interpret(line) for line in self.lines)
+
+    def _item_to_number(self, d):
+        return int(d)
+
+
+class Day1Part2(Day1Part1):
+    DIGIT_WORDS = (
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+
+    @property
+    def pattern(self):
+        return f"(?=(\\d|{'|'.join(self.DIGIT_WORDS)}))"
+
+    def _item_to_number(self, d):
+        return int(d) if d.isdigit() else self.DIGIT_WORDS.index(d) + 1
