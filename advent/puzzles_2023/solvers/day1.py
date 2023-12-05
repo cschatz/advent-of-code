@@ -24,4 +24,4 @@ class Day1Part2(Day1Part1):
     PATTERN = f"(?=(\\d|{'|'.join(DIGIT_WORDS)}))"
 
     def _item_to_number(self, d):
-        return int(d) if d.isdigit() else self.DIGIT_WORDS.index(d) + 1
+        return int(d) if d.isdigit() else DIGIT_WORDS.index(d) + 1

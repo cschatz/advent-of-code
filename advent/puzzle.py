@@ -39,7 +39,7 @@ class Puzzle:
 
     def solve(self):
         for i, part in enumerate(self.parts):
-            print(f"\n--- Part {part} ---")
+            print(f"\n  --- Part {part} ---")
             if self.test_solvers:
                 for label, test_solver, expected in self.test_solvers[i]:
                     test_result = test_solver.solve()
