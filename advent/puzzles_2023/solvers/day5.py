@@ -1,7 +1,8 @@
 import re
+import sys
 
 from dataclasses import dataclass
-from itertools import chain, pairwise
+from itertools import pairwise
 
 from .base import Solver
 
@@ -27,15 +28,7 @@ class Map:
             elif next is not None and src < next.src_start:
                 break
         return src
-    
-    def map_range(self, begin, end):
-        # apply mappint to the range (begin, end) inclusive,
-        # producing one or more mapped ranges
-        
-        # fake implementation, just splitting arbitrarily
-        rlen = end - begin + 1
-        return ((begin, begin + rlen // 2), (begin + rlen // 2 + 1, end))
-    
+
 
 class Day5(Solver):
     def parse(self, lines):
@@ -47,27 +40,37 @@ class Day5(Solver):
             if m := re.match(r"(\w+)-to-(\w+) map", line):
                 src, dst = m.groups()
             elif line == "":
-                 # turns out src and dst categories aren't needed
+                # turns out src and dst categories aren't needed
                 self.maps.append(Map(src, dst, ranges))
                 ranges = []
             else:
                 ranges.append(Range(*(int(x) for x in line.split(" "))))
 
-class Day5Part1(Day5):
     def seed_to_location(self, seed):
         n = seed
         for map in self.maps:
-            n = map.map_fwd(n)
-        return n  
-    
+            n = map.map(n)
+        return n
+
+
+class Day5Part1(Day5):
+
     def solve(self):
-        return min(self.seed_to_location(s) for s in self.seeds)            
+        return min(self.seed_to_location(s) for s in self.seeds)          
 
 
 class Day5Part2(Day5):
     def solve(self):
         s = self.seeds
-        ranges = ((s[i], s[i] + s[i+1] - 1) for i in range(0, len(s), 2))
-        for map in self.maps:
-            ranges = tuple(chain.from_iterable(map.map_range(begin, end) for begin, end in ranges))
-        
+        smallest = 1 << 64  # hopefully large enough!
+        ranges = ((s[i], s[i+1]) for i in range(0, len(s), 2))
+        for start, rlen in ranges:
+            print(f"     Range {start} -> {start + rlen}")
+            for rel in range(0, rlen):
+                if rel % 1000000 == 0:
+                    print(f"     ...{start + rel}")
+                    sys.stdout.flush()
+                loc = self.seed_to_location(start + rel)
+                smallest = min(smallest, loc)
+        return smallest
+                
