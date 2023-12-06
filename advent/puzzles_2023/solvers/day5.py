@@ -73,4 +73,3 @@ class Day5Part2(Day5):
                 loc = self.seed_to_location(start + rel)
                 smallest = min(smallest, loc)
         return smallest
-                
