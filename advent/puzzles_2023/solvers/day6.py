@@ -1,5 +1,5 @@
 import re
-from math import ceil, floor, sqrt
+from math import floor, sqrt
 
 from .base import Solver
 
@@ -24,13 +24,14 @@ class Day6Part1(Day6):
 
 class Day6Part2(Day6):
     def parse(self, lines):
-        race = tuple(
-            int(''.join(re.findall(r'(\d+)', line)))
-            for line in lines
-        )
-        self.races = [race]
+        self.races = [
+            tuple(
+                int(''.join(re.findall(r'(\d+)', line)))
+                for line in lines
+            )
+        ]
 
 
 def _solve_race(t, d):
-    n1, n2 = (t / 2, sqrt(t ** 2 - 4 * d) / 2)
-    return ceil(n1 + n2 - 1) - floor(n1 - n2 + 1) + 1
+    quad_root = (t - sqrt(t ** 2 - 4 * d)) / 2
+    return t + 1 - 2 * (floor(quad_root) + 1)
