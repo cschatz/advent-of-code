@@ -1,6 +1,14 @@
 from .base import Solver
 
 
+
+def show(rows, cols):
+    for label, grid in zip(("Rows", "Cols"), (rows, cols)):
+        print(label)
+        for r in grid:
+            print(''.join(r))
+    print()
+
 class Day13(Solver):
     def parse(self, lines):
         def process(grid_lines):
@@ -19,9 +27,9 @@ class Day13(Solver):
                 return False
         return True
     
-    def find_reflect_pos(self, items):
+    def find_reflect_pos(self, items, skip=0):
         for index in range(1, len(items)):
-            if self.reflects_at(items, index):
+            if index != skip and self.reflects_at(items, index):
                 return index
         return None
     
@@ -31,8 +39,8 @@ class Day13(Solver):
         else:
             return col_refl
     
-    def find_refl_points(self, rows, cols):
-        return tuple(self.find_reflect_pos(g) for g in (rows, cols))
+    def find_refl_points(self, rows, cols, skipping=(0, 0)):
+        return tuple(self.find_reflect_pos(g, s) for g, s in zip((rows, cols), skipping))
 
 class Day13Part1(Day13):
     def solve(self):
@@ -50,15 +58,15 @@ class Day13Part2(Day13):
 
     def check(self, rows, cols):
         orig_points = self.find_refl_points(rows, cols)
+
         for r in range(len(rows)):
             for c in range(len(rows[0])):
                 self.toggle(rows, cols, r, c)
-                points = self.find_refl_points(rows, cols)
-                if points != orig_points:
-                    print(orig_points, "->", points)
+                points = self.find_refl_points(rows, cols, skipping=orig_points)
+                if points != orig_points and points != (None, None):
                     return points
                 self.toggle(rows, cols, r, c)
-        assert False  # should not reach here
+        assert False
 
     def solve(self):
         return sum(
