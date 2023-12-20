@@ -3,6 +3,37 @@ import re
 from .base import Solver
 
 
+class Condition:
+    def __init__(self, text, terminal=False):
+        self.text = text
+        if terminal:
+            self.check = None
+            self.value = text
+        else:
+            condition, self.value = text.split(":")
+            self.category = condition[0]
+            self.comparison = condition[1]
+            self.cutoff = int(condition[2:])
+            if self.comparison == "<":
+                self.check = lambda p: p[self.category] < self.cutoff
+            else:
+                self.check = lambda p: p[self.category] > self.cutoff
+
+    def __call__(self, part):
+        if self.check:
+            return self.value if self.check(part) else None
+        else:
+            return self.value
+
+    def split(self):
+        return (
+            self.category,
+            (self.comparison, self.cutoff),
+            self.value,
+            _opp(self.comparison, self.cutoff)
+        )
+
+
 class Day19(Solver):
     def parse(self, lines):
         all = "\n".join(lines)
@@ -37,7 +68,8 @@ class Day19Part1(Day19):
 
 class Day19Part2(Day19):
     def solve(self):
-        ...
+        workflow = self.workflows["in"]
+        
 
 
 def _parse_rating_set(text):
@@ -49,31 +81,24 @@ def _parse_workflow(text):
     m = re.match(r"(.+)\{(.+)\}", text)
     label = m.group(1)
     rules = m.group(2).split(",")
-    steps = tuple(_parse_rule(r) for r in rules[:-1])
-    steps = steps + (_parse_rule(rules[-1], last_rule=True),)
+    steps = tuple(Condition(r) for r in rules[:-1])
+    steps = steps + (Condition(rules[-1], terminal=True),)
     return {label: steps}
 
 
-def _parse_rule(text, last_rule=False):
-    if last_rule:
-        return lambda _: text
-    else:
-        condition, label = text.split(":")
-        category = condition[0]
-        comparison = condition[1]
-        cutoff = int(condition[2:])
-        if comparison == "<":
-            return lambda part: label if part[category] < cutoff else None
-        else:
-            return lambda part: label if part[category] > cutoff else None
-
-
 def _apply_workflow(workflow, part):
-    for rule in workflow:
-        result = rule(part)
-        if result is not None:
+    for condition in workflow:
+        result = condition(part)
+        if result:
             return result
 
 
 def _score(part):
     return sum(part.values())
+
+
+def _opp(comparison, cutoff):
+    if comparison == "<":
+        return (">", cutoff - 1)
+    else:
+        return ("<", cutoff + 1)
