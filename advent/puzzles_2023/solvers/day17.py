@@ -37,12 +37,15 @@ class Day17(Solver):
         
         
 
+    
+    def neighbors(self, r, c, last_dir
 
 
 class Day17Part1(Day17):
     def solve(self):
         goal = (self.num_rows - 1, self.num_cols - 1)
         start = (0, 0)
+        path = []
         dist = {start: 0}
         prev = dict()
         vertices = set((r, c) for r in range(self.num_rows) for c in range(self.num_cols))
