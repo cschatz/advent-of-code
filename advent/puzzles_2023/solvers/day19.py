@@ -1,35 +1,50 @@
 import re
 
+from functools import reduce
+from operator import __mul__
+
 from .base import Solver
 
 
 class Condition:
-    def __init__(self, text, terminal=False):
+    def __init__(self, text):
         self.text = text
-        self.key = None
-        self.op = None
-        self.target = None
-        if terminal:
-            self.predicate = None
-            self.target = text
+        self.cat = text[0]
+        self.op = text[1]
+        self.value = int(text[2:])
+        if self.op == "<":
+            self.predicate = lambda p: p[self.cat] < self.value
         else:
-            condition, self.target = text.split(":")
-            self.key = condition[0]
-            self.op = condition[1]
-            self.value = int(condition[2:])
-            if self.op == "<":
-                self.predicate = lambda p: p[self.key] < self.value
-            else:
-                self.predicate = lambda p: p[self.key] > self.value
+            self.predicate = lambda p: p[self.cat] > self.value
 
     def apply(self, part):
-        if self.predicate:
-            return self.target if self.predicate(part) else None
-        else:
-            return self.target
+        return self.predicate(part)
+    
+    def __str__(self):
+        return self.text
 
-    def __repr__(self):
-        return (self.key, self.op, self.value, self.target)
+
+class Rule:
+    def __init__(self, text, terminal=False):
+        if terminal:
+            self.condition = None
+            self.target = text
+        else:
+            cond, self.target = text.split(":")
+            self.condition = Condition(cond)
+
+    def apply(self, part):
+        if not self.condition:
+            return self.target
+        else:
+            return self.target if self.condition.apply(part) else None
+
+    def __str__(self):
+        if self.condition:
+            return f"({self.condition}) -> {self.target}"
+        else:
+            return f"* -> {self.target}"
+       
 
 
 class Day19(Solver):
@@ -65,25 +80,40 @@ class Day19Part1(Day19):
 
 
 class Day19Part2(Day19):
-    def _paths(workflow_name):
-        
-        def trace_paths(workflows, state):
-    workflow_name, constraints = state
-    for condition, target in workflows[workflow_name]['rules']:
-        if condition is None:
-            cons_true = constraints
-        else:
-            cons_true = add_constraint(constraints, condition)
-            constraints = add_constraint(constraints, invert(condition))
-        if cons_true is not None:
-            if target == 'A':
-                yield cons_true
-            elif target != 'R':
-                yield from trace_paths(workflows, (target, cons_true))
-
+    def trace_paths(self, name, constraints):
+        for rule in self.workflows[name]:
+            if rule.condition is None:  # terminal output
+                constraints_on_true = constraints
+            else:
+                constraints_on_true = _updated_constraints(constraints, rule.condition)
+                constraints = _updated_constraints(constraints, _invert(rule.condition))
+            if constraints_on_true is not None:
+                if rule.target == "A":
+                    yield constraints_on_true
+                elif rule.target != "R":
+                    yield from self.trace_paths(rule.target, constraints_on_true)
 
     def solve(self):
-        ...
+        paths = self.trace_paths("in", {c: (1, 4000) for c in "xmas"})
+        return sum(
+            reduce(
+                __mul__,
+                (upper - lower + 1 for lower, upper in path.values()) 
+            )
+            for path in paths
+        )
+
+def _updated_constraints(constraints, cond):
+    lower, upper = constraints.get(cond.cat, (1, 4000))
+    if cond.op == '>':
+        if cond.value >= upper:
+            return None
+        lower = cond.value + 1
+    else:
+        if cond.value <= lower:
+            return None
+        upper = cond.value - 1
+    return dict(constraints, **{cond.cat: (lower, upper)})
 
 
 def _parse_rating_set(text):
@@ -95,8 +125,8 @@ def _parse_workflow(text):
     m = re.match(r"(.+)\{(.+)\}", text)
     label = m.group(1)
     rules = m.group(2).split(",")
-    steps = tuple(Condition(r) for r in rules[:-1])
-    steps = steps + (Condition(rules[-1], terminal=True),)
+    steps = tuple(Rule(r) for r in rules[:-1])
+    steps = steps + (Rule(rules[-1], terminal=True),)
     return {label: steps}
 
 
@@ -111,5 +141,12 @@ def _score(part):
     return sum(part.values())
 
 
-def _invert(key, op, val):
-    return (key, ">", val - 1) if op == "<" else (key, "<", val + 1)
+def _invert(cond):
+    inv_cond = cond
+    if cond.op == ">":
+        inv_cond.op = "<"
+        inv_cond.value = cond.value + 1
+    else:
+        inv_cond.op = ">"
+        inv_cond.value = cond.value - 1
+    return inv_cond
