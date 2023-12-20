@@ -65,9 +65,25 @@ class Day19Part1(Day19):
 
 
 class Day19Part2(Day19):
-    def solve(self):
-        workflow = self.workflows["in"]
+    def _paths(workflow_name):
         
+        def trace_paths(workflows, state):
+    workflow_name, constraints = state
+    for condition, target in workflows[workflow_name]['rules']:
+        if condition is None:
+            cons_true = constraints
+        else:
+            cons_true = add_constraint(constraints, condition)
+            constraints = add_constraint(constraints, invert(condition))
+        if cons_true is not None:
+            if target == 'A':
+                yield cons_true
+            elif target != 'R':
+                yield from trace_paths(workflows, (target, cons_true))
+
+
+    def solve(self):
+        ...
 
 
 def _parse_rating_set(text):
@@ -95,8 +111,5 @@ def _score(part):
     return sum(part.values())
 
 
-def _opp(comparison, cutoff):
-    if comparison == "<":
-        return (">", cutoff - 1)
-    else:
-        return ("<", cutoff + 1)
+def _invert(key, op, val):
+    return (key, ">", val - 1) if op == "<" else (key, "<", val + 1)
