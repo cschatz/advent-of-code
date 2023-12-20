@@ -6,32 +6,30 @@ from .base import Solver
 class Condition:
     def __init__(self, text, terminal=False):
         self.text = text
+        self.key = None
+        self.op = None
+        self.target = None
         if terminal:
-            self.check = None
-            self.value = text
+            self.predicate = None
+            self.target = text
         else:
-            condition, self.value = text.split(":")
-            self.category = condition[0]
-            self.comparison = condition[1]
-            self.cutoff = int(condition[2:])
-            if self.comparison == "<":
-                self.check = lambda p: p[self.category] < self.cutoff
+            condition, self.target = text.split(":")
+            self.key = condition[0]
+            self.op = condition[1]
+            self.value = int(condition[2:])
+            if self.op == "<":
+                self.predicate = lambda p: p[self.key] < self.value
             else:
-                self.check = lambda p: p[self.category] > self.cutoff
+                self.predicate = lambda p: p[self.key] > self.value
 
-    def __call__(self, part):
-        if self.check:
-            return self.value if self.check(part) else None
+    def apply(self, part):
+        if self.predicate:
+            return self.target if self.predicate(part) else None
         else:
-            return self.value
+            return self.target
 
-    def split(self):
-        return (
-            self.category,
-            (self.comparison, self.cutoff),
-            self.value,
-            _opp(self.comparison, self.cutoff)
-        )
+    def __repr__(self):
+        return (self.key, self.op, self.value, self.target)
 
 
 class Day19(Solver):
@@ -49,21 +47,21 @@ class Day19(Solver):
 
 
 class Day19Part1(Day19):
-    def eval_part(self, part):
+    def check_part(self, part):
         workflow = self.workflows["in"]
         while True:
             out = _apply_workflow(workflow, part)
             if out in ("A", "R"):
-                return out
+                return out == "A"
             else:
                 workflow = self.workflows[out]
 
     def solve(self):
-        tot = 0
-        for part in self.parts:
-            if self.eval_part(part) == "A":
-                tot += _score(part)
-        return tot
+        return sum(
+            _score(part)
+            for part in self.parts
+            if self.check_part(part)
+        )
 
 
 class Day19Part2(Day19):
@@ -88,7 +86,7 @@ def _parse_workflow(text):
 
 def _apply_workflow(workflow, part):
     for condition in workflow:
-        result = condition(part)
+        result = condition.apply(part)
         if result:
             return result
 
