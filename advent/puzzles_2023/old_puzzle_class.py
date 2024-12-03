@@ -1,10 +1,8 @@
 from glob import glob
 from importlib import import_module
 
-DAY_PATH = "advent/puzzles_{}/day{}/"
-INPUT_PATH = DAY_PATH + "inputs/"
-PUZZLE_PATH = INPUT_PATH + "puzzle" 
-TEST_PATH = INPUT_PATH + "test{}"
+INPUT_PATH = "advent/puzzles_{}/inputs/day{}"
+TEST_PATH = INPUT_PATH + "-test{}"
 
 
 class PuzzleError(Exception):
@@ -22,7 +20,7 @@ class Puzzle:
         self.puzzle_solvers = []
         self.test_solvers = []
         if include_puzzle:
-            puzzle_input, _ = _input_from_file(PUZZLE_PATH.format(year, day))
+            puzzle_input, _ = _input_from_file(INPUT_PATH.format(year, day))
             for part in parts:
                 self.puzzle_solvers.append(_solver_class(year, day, part)(puzzle_input))
         if include_tests:
@@ -72,7 +70,7 @@ def _input_from_file(filename, is_test=False):
 
 
 def _solver_class(year, day, part):
-    module_path = f"advent.puzzles_{year}.day{day}.solver"
+    module_path = f"advent.puzzles_{year}.solvers.day{day}"
     solver_cls_name = f"Day{day}Part{part}"
     try:
         solver_cls = getattr(
