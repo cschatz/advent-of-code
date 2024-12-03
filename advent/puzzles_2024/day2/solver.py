@@ -2,11 +2,8 @@ import re
 
 from ...solver import Solver
 
-DIGIT_WORDS = (
-    "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 
-
-class Day2Part1(Solver):
+class Part1(Solver):
 
     def parse(self, lines):
         self.reports = [
@@ -35,7 +32,7 @@ class Day2Part1(Solver):
         return sum(self.check_report(report) for report in self.reports)
     
 
-class Day2Part2(Day2Part1):
+class Part2(Part1):
 
     def check_report(self, report):
         if super().check_report(report):

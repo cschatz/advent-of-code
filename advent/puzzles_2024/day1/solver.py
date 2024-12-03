@@ -1,6 +1,6 @@
 from ...solver import Solver
 
-class Day1Part1(Solver):
+class Part1(Solver):
 
     def parse(self, lines):
         def process(line):
@@ -13,7 +13,7 @@ class Day1Part1(Solver):
             for a, b in zip(*map(sorted, self.lists))
         )
 
-class Day1Part2(Day1Part1):
+class Part2(Part1):
     def solve(self):
         left, right = self.lists
         return sum(

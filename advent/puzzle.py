@@ -12,8 +12,8 @@ class PuzzleError(Exception):
 
 
 class Puzzle:
-    """Represent applying solver code to a particular day's puzzle,
-    optionally including test input in addition to the main puzzle input."""
+    """Encapsulates applying solver code to particular day(s) inputs,
+    optionally including test inputs in addition to the main puzzle input."""
 
     def __init__(self, year, day, parts, include_puzzle, include_tests):
         self.parts = parts
@@ -73,7 +73,7 @@ def _input_from_file(filename, is_test=False):
 
 def _solver_class(year, day, part):
     module_path = f"advent.puzzles_{year}.day{day}.solver"
-    solver_cls_name = f"Day{day}Part{part}"
+    solver_cls_name = f"Part{part}"
     try:
         solver_cls = getattr(
             import_module(module_path),
