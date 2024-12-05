@@ -4,27 +4,18 @@ from ...solver import Solver
 
 
 class Part1(Solver):
-
     def parse(self, lines):
         self.reports = [
             [int(x) for x in line.split(" ")]
             for line in lines
         ]
-        def process(line):
-            return tuple(int(x) for x in line.split())
-        self.lists = zip(*[process(line) for line in lines])
 
     def check_report(self, report):
-        n = len(report)
-        steps = [report[i+1] - report[i] for i in range(n-1)]
+        steps = [report[i+1] - report[i] for i in range(len(report)-1)]
         increasing = steps[0] > 0
         for step in steps:
-            if step == 0:
-                return False
-            if (step > 0) != increasing:
-                return False
             size = abs(step)
-            if size < 1 or size > 3:
+            if step == 0 or ((step > 0) != increasing) or size < 1 or size > 3:
                 return False
         return True
 
@@ -33,12 +24,9 @@ class Part1(Solver):
     
 
 class Part2(Part1):
-
     def check_report(self, report):
-        if super().check_report(report):
-            return True
-        n = len(report)
-        for dampened_report in [report[:i] + report[i+1:] for i in range(n)]:
-            if super().check_report(dampened_report):
-                return True
-        return False
+        check = super().check_report
+        return any(
+            check(dampened_report)
+            for dampened_report in [report[:i] + report[i+1:] for i in range(len(report))]
+        )

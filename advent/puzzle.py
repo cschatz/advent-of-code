@@ -17,8 +17,6 @@ class Puzzle:
 
     def __init__(self, year, day, parts, include_puzzle, include_tests):
         self.parts = parts
-        self.include_puzzle = include_puzzle
-        self.include_tests = include_tests
         self.puzzle_solvers = []
         self.test_solvers = []
         if include_puzzle:
@@ -53,8 +51,7 @@ class Puzzle:
 
 def _open_file(filename):
     try:
-        file = open(filename)
-        return file
+        return open(filename)
     except FileNotFoundError:
         raise PuzzleError(f"Missing expected file '{filename}'")
 
@@ -72,14 +69,11 @@ def _input_from_file(filename, is_test=False):
 
 
 def _solver_class(year, day, part):
-    module_path = f"advent.puzzles_{year}.day{day}.solver"
-    solver_cls_name = f"Part{part}"
     try:
-        solver_cls = getattr(
-            import_module(module_path),
-            solver_cls_name
+        return getattr(
+            import_module(f"advent.puzzles_{year}.day{day}.solver"),
+            f"Part{part}"
         )
-        return solver_cls
     except (ModuleNotFoundError, AttributeError):
         raise PuzzleError(f"Missing solver code for day {day} part {part}")
 
