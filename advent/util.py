@@ -25,7 +25,7 @@ def input_from_file(filename, is_test=False):
 def solver_class(year, day, part):
     try:
         return getattr(
-            import_module(f"advent.puzzles_{year}.day{day}.solver"),
+            import_module(f"advent.years._{year}.day{day}.solver"),
             f"Part{part}"
         )
     except (ModuleNotFoundError, AttributeError):

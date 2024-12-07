@@ -10,7 +10,7 @@ from .util import (
     validate_year,
 )
 
-DAY_PATH = "advent/puzzles_{}/day{}/"
+DAY_PATH = "advent/years/_{}/day{}/"
 INPUT_PATH = DAY_PATH + "inputs/"
 PUZZLE_PATH = INPUT_PATH + "puzzle" 
 TEST_PATH = INPUT_PATH + "test{}"
@@ -33,7 +33,7 @@ class Puzzle:
                 part_test_solvers = []
                 for filename in files:
                     test_input, expected = input_from_file(filename, is_test=True)
-                    test_name = filename[len(TEST_PATH):].capitalize()
+                    test_name = filename[len(TEST_PATH) + 1:].capitalize()
                     label = "Test" + (f" {test_name}" if test_name else "")
                     solver = solver_cls(test_input)
                     part_test_solvers.append((label, solver, expected))
