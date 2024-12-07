@@ -1,5 +1,5 @@
 from collections import defaultdict
-from ...solver import Solver
+from ...solver_base import Solver
 
 class Part1(Solver):
     def parse(self, lines):

@@ -1,7 +1,3 @@
-class TestFailure(Exception):
-    pass
-
-
 class Solver:
 
     def __init__(self, lines):

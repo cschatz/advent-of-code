@@ -1,6 +1,6 @@
 import re
 
-from ...solver import Solver
+from ...solver_base import Solver
 
 
 class Part1(Solver):

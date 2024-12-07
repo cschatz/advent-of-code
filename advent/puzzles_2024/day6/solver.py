@@ -1,5 +1,4 @@
-from collections import defaultdict
-from ...solver import Solver
+from ...solver_base import Solver
 
 UP_DIR = (-1, 0)
 START_UP = "^"
