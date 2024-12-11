@@ -9,9 +9,10 @@ def blink(stone, n):
     if stone == 0:
         return blink(1, n - 1)
     if (digits := len(rock := str(stone))) % 2 == 0:
+        half = digits // 2
         return (
-            blink(int(rock[:digits//2]), n - 1)
-            + blink(int(rock[digits//2:]), n - 1)
+            blink(int(rock[:half]), n - 1)
+            + blink(int(rock[half:]), n - 1)
         )
     return blink(stone * 2024, n - 1)
 
