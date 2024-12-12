@@ -12,12 +12,11 @@ def vadd(a, b):
     return tuple(ai + bi for ai, bi in zip(a, b))
 
 def make_fence(r, c, dr, dc):
-    if dr:
-        # horizontal fence: ( above/below, (row below fence), col )
-        return ("below" if dr > 0 else "above", (dr + 1) // 2 + r, c)
+    # (direction, coord on axis that fence parallels
+    if dr: 
+        return ((dr, dc), r, c)
     else:
-        # vertical fence: ( left/right, col to right of fence), row )
-        return ("right" if dc > 0 else "left", (dc + 1) // 2 + c, r)
+        return ((dr, dc), c, r)
 
 
 class Day12(Solver):
